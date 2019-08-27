@@ -21,6 +21,7 @@ namespace AFD
                 tl = automato.recuperarProximoTokenLexema();
                 Console.WriteLine(tl.ToString());
             }
+            Console.ReadKey();
         }
     }
 }

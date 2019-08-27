@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AFD.ValueObjects
 {
@@ -13,6 +14,9 @@ namespace AFD.ValueObjects
             this.marcado = marcado;
             this.identificador = identificador;
             this.transition = new Dictionary<char, StateValueObject>();
+        }
+        public bool existsTransition(char c) {
+            return transition.Keys.Where(obj => obj == c).Any();
         }
         public void addTransition(char c, StateValueObject estado) => transition.Add(c, estado);
         public StateValueObject getNextState(char c) => transition.GetValueOrDefault(c);

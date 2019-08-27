@@ -1,6 +1,8 @@
 using AFD.Enums;
 using AFD.ValueObjects;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace AFD
 {
@@ -8,12 +10,12 @@ namespace AFD
     {
         private StateValueObject s0;
         private FileIterator iteradorArquivo;
-        private Dictionary<StateValueObject, TipoToken> tabelaSimbolos;
+        private Dictionary<StateValueObject, dynamic> tabelaSimbolos;
 
         public Automato(FileIterator iteradorArquivo)
         {
             this.iteradorArquivo = iteradorArquivo;
-            this.tabelaSimbolos = new Dictionary<StateValueObject, TipoToken>();
+            this.tabelaSimbolos = new Dictionary<StateValueObject, dynamic>();
 
             s0 = new StateValueObject(false, 0);
 
@@ -22,9 +24,21 @@ namespace AFD
             s0.addTransition('\n', s0);
             s0.addTransition('\r', s0);
 
-            criarTransicoesPalavra01();
+            if (!File.Exists("lexemas.txt")) throw new FileNotFoundException("Arquivo específicado não encontrado");
 
-            criarTransicoesPalavra02();
+            var lines = File.ReadLines("lexemas.txt");
+
+            foreach (var item in lines)
+            {
+                var split = item.Split(";");
+                
+                tabelaSimbolos.criarTransicaoPalavra(s0, split[0], split[1]);
+            }
+
+            foreach (var item in tabelaSimbolos)
+            {
+                Console.WriteLine(item.Key.toString(), item.Value.ToString());
+            }
         }
 
         public TokenLexeme recuperarProximoTokenLexema()
@@ -38,15 +52,15 @@ namespace AFD
             while (estadoAtual != null &&
                   !estadoAtual.isChecked() &&
                   (c = iteradorArquivo.nextChar()) != null)
-            { 
+            {
                 estadoAtual = estadoAtual.getNextState(c[0]);
                 if (!s0.Equals(estadoAtual))
-                    lexema = lexema + c;  
+                    lexema = lexema + c;
             }
 
-            if (estadoAtual == null)            
+            if (estadoAtual == null)
                 tokenLexema = new TokenLexeme(TipoToken.NAO_RECONHECIDA, lexema);
-            
+
             else
             {
                 if (estadoAtual.isChecked())

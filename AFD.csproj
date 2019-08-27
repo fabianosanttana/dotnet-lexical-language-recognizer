@@ -7,9 +7,13 @@
 
   <ItemGroup>
     <None Remove="file.txt" />
+    <None Remove="lexemas.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="lexemas.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="file.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
