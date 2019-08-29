@@ -12,11 +12,11 @@ namespace AFD
         public static void criarTransicaoPalavra(this Dictionary<StateValueObject, dynamic> tabelaSimbolos, StateValueObject s0, string lexema, string token)
         {
             StateValueObject last = s0;
-            for (int i = 0; i < lexema.Length - 1; i++)
-            {
-                var dyn = criarEstadoTransicaoUnica((i + 1), last, lexema[i], false);
-                last = dyn;
-            }
+            if (lexema.Length == 1)
+                last = criarEstadoTransicaoUnica(1, last, lexema[0], false);
+            else
+                for (int i = 0; i <= lexema.Length - 1; i++)
+                    last = criarEstadoTransicaoUnica((i + 1), last, lexema[i], false);
 
 
             StateValueObject estadoFinal = new StateValueObject(true, lexema.Length);
@@ -26,6 +26,13 @@ namespace AFD
             tabelaSimbolos.Add(estadoFinal, token.ToUpper());
         }
 
+        public static void criarTransicaoNumerica(this Dictionary<StateValueObject, dynamic> tabelaSimbolos, StateValueObject s0)
+        {
+            for (int i = 0; i <= 9; i++)
+                   criarEstadoTransicaoUnica((i + 1), s0, (char)i, false);
+        }
+
+
         private static StateValueObject criarEstadoTransicaoUnica(int identificador,
         StateValueObject estadoAnterior, char caracterTransicao,
         bool marcado)
@@ -33,6 +40,8 @@ namespace AFD
             StateValueObject s = new StateValueObject(marcado, identificador);
             if (!estadoAnterior.existsTransition(caracterTransicao))
                 estadoAnterior.addTransition(caracterTransicao, s);
+            else
+                return estadoAnterior.getTransition(caracterTransicao);
             return s;
         }
     }

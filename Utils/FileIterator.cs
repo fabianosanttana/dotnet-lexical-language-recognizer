@@ -20,14 +20,14 @@ namespace AFD
                 list = file.ReadToEnd().ToCharArray();
             }
         }
-        public string nextChar()
+        public char nextChar()
         {
             if (hasNextToken())
             {
                 this.actualIndex++;
-                return list[actualIndex].ToString();
+                return list[actualIndex];
             }
-            return null;
+            return '¨';
         }
         public bool hasNextToken() => (actualIndex + 1) < list.Length;
         public void voltar1Posicao() => this.actualIndex--;

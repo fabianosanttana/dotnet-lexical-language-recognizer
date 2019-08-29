@@ -1,0 +1,4 @@
+program programa begin beginho
+12.2 12.11 11 01 99 12.13.13
+souUmaString99 NaoSouUmaString
++ - > < <= >= != ; ( ) { } * && || | 

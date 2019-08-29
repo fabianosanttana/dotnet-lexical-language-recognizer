@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="file.txt" />
-    <None Remove="lexemas.txt" />
+    <None Remove="Dicionario_lexemas.txt" />
+    <None Remove="Texto_a_ser_reconhecido.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="lexemas.txt">
+    <EmbeddedResource Include="Arquivos\Dicionario_lexemas.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="file.txt">
+    <EmbeddedResource Include="Arquivos\Texto_a_ser_reconhecido.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

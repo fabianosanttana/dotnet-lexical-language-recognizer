@@ -24,21 +24,17 @@ namespace AFD
             s0.addTransition('\n', s0);
             s0.addTransition('\r', s0);
 
-            if (!File.Exists("lexemas.txt")) throw new FileNotFoundException("Arquivo específicado não encontrado");
+            if (!File.Exists("Arquivos/Dicionario_lexemas.txt")) throw new FileNotFoundException("Arquivo específicado não encontrado");
 
-            var lines = File.ReadLines("lexemas.txt");
+            var lines = File.ReadLines("Arquivos/Dicionario_lexemas.txt");
 
             foreach (var item in lines)
             {
-                var split = item.Split(";");
-                
+                var split = item.Split("|&!");
+
                 tabelaSimbolos.criarTransicaoPalavra(s0, split[0], split[1]);
             }
-
-            foreach (var item in tabelaSimbolos)
-            {
-                Console.WriteLine(item.Key.toString(), item.Value.ToString());
-            }
+            tabelaSimbolos.criarTransicaoNumerica(s0);
         }
 
         public TokenLexeme recuperarProximoTokenLexema()
@@ -47,25 +43,66 @@ namespace AFD
             string lexema = "";
 
             StateValueObject estadoAtual = s0;
-            string c = " ";
-
-            while (estadoAtual != null &&
-                  !estadoAtual.isChecked() &&
-                  (c = iteradorArquivo.nextChar()) != null)
+            char c = ' ';
+            bool podeSerNumerico = false, eNumerico = false, podeSerString = false, eString = false;
+            while (
+                //Enquanto for token   
+                (eNumerico && (c = iteradorArquivo.nextChar()) != '¨' && !IsSpace(c)) ||
+                //Enquanto for lexema
+                (estadoAtual != null && !estadoAtual.isChecked() && (c = iteradorArquivo.nextChar()) != '¨') ||
+                //Enquanto for string
+                (eString && estadoAtual is null && (c = iteradorArquivo.nextChar()) != '¨' && !IsSpace(c)) ||
+                //Palavra completa que não é string, nem lexema nem inteiro
+                (eNumerico is false && eString is false && estadoAtual is null && (c = iteradorArquivo.nextChar()) != '¨' && !IsSpace(c))
+                )
             {
-                estadoAtual = estadoAtual.getNextState(c[0]);
+                // Validação se o primeiro caracter é uma letra minuscula
+                if ((int)c > 96 && (int)c < 123 && s0.Equals(estadoAtual))
+                    eString = true;
+                
+                try
+                {
+                    if (!eNumerico)
+                        estadoAtual = estadoAtual.getNextState(c);
+                }
+                catch (Exception x)
+                {
+                    //ignored
+                }
+
+                if (eString is false && estadoAtual == null && char.IsNumber(c))
+                    eNumerico = true;
+
+                else if (eNumerico && (c.Equals('.') || c.Equals(',')) && (!podeSerNumerico || ((podeSerString = true))))
+                {
+                    if (eNumerico)
+                        podeSerNumerico = true;
+                    else
+                        podeSerNumerico = false;
+                    lexema = lexema + c;
+                    continue;
+                }
+
+                else if (eNumerico)
+                    podeSerString = true;
+
+
                 if (!s0.Equals(estadoAtual))
                     lexema = lexema + c;
             }
+            if(eString && estadoAtual == null)
+                tokenLexema = new TokenLexeme("STRING", lexema);
+            else if (!podeSerString && (eNumerico || podeSerNumerico))
+                tokenLexema = new TokenLexeme("NUMÉRICO", lexema);
 
-            if (estadoAtual == null)
+            else if (estadoAtual == null)
                 tokenLexema = new TokenLexeme(TipoToken.NAO_RECONHECIDA, lexema);
 
             else
             {
                 if (estadoAtual.isChecked())
                 {
-                    TipoToken tipoToken = tabelaSimbolos[estadoAtual];
+                    string tipoToken = tabelaSimbolos[estadoAtual];
                     tokenLexema = new TokenLexeme(tipoToken, lexema);
                 }
                 else if (s0.Equals(estadoAtual))
@@ -75,6 +112,11 @@ namespace AFD
             }
 
             return tokenLexema;
+        }
+
+        private bool IsSpace(char c)
+        {
+            return c.Equals(' ') || c.Equals('\t') || c.Equals('\r');
         }
 
         private void criarTransicoesPalavra01()

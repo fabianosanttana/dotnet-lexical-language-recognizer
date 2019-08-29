@@ -7,8 +7,7 @@ namespace AFD
     {
         static void Main(string[] args)
         {
-
-            string fileName = "./file.txt";
+            string fileName = "./Arquivos/Texto_a_ser_reconhecido.txt";
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Exceptions.Handler);
 
@@ -19,8 +18,11 @@ namespace AFD
             while (iterator.hasNextToken())
             {
                 tl = automato.recuperarProximoTokenLexema();
+                
                 Console.WriteLine(tl.ToString());
+                Log.LogMessage(tl.ToString());
             }
+            Console.WriteLine("Foi salvo um arquivo de log na sua área de trabalho com todas as palavras");
             Console.ReadKey();
         }
     }
