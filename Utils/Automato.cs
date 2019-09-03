@@ -91,7 +91,7 @@ namespace AFD
                     lexema = lexema + c;
             }
             if(eString && estadoAtual == null)
-                tokenLexema = new TokenLexeme("STRING", lexema);
+                tokenLexema = new TokenLexeme("VARIÁVEL", lexema);
             else if (!podeSerString && (eNumerico || podeSerNumerico))
                 tokenLexema = new TokenLexeme("NUMÉRICO", lexema);
 
